@@ -759,16 +759,7 @@ $(function(){
             return console.error(e, e.stack);
         });
     };
-    //  socket 接口
-    /* var wsServer='ws://222.73.146.46:8089/carseeker/webSocketServer?parkId=1272&parkLever=A';
-     var websocket=new WebSocket(wsServer);
-     websocket.onmessage=function(ev){
-     var socketObject = JSON.parse(ev.data).freeList;
-     for(var i=0;i<socketObject.length;i++){
-     console.log(socketObject[i])
-     }
 
-     }*/
     var locFlag = false;
     var stableFloor = null;
     var stable = false;
@@ -892,182 +883,9 @@ $(function(){
             parkOnff=true;
         }
     })
-    var inputHandleroo = function (e) {
-        var elementId= e.target.id;
-        if($('.LocalStorageBox').has($('.wwa'))){
-            $('.LocalStorageBox').html('');
-        }
 
-        var POIKeywords = $("#" + elementId).val();
-        selectedLatlngoo = null;
-        selectedFlooroo = null;
-        selectedPoiId = null;
-        var pattSpace = /^\s*$/g;
-
-        $(".appendPieces").remove();
-        if (elementId === "OutDoorStartInput") {
-            fromFlooroo = null;
-            fromLatlngoo = null;
-        } else {
-            toFlooroo = null;
-            toLatlngoo = null;
-            plateIdoo = null;
-        }
-
-        if (pattSpace.test(POIKeywords)) {
-            return ;
-        }
-        datasource.POISearch({"keywords": POIKeywords,"start":1,"count":7,"parents": floorList}).then(function (res) {
-            if (res.list.length === 0) {
-                return ;
-            }
-            res.list.forEach(function(poiInfo){
-
-                var wwa=$('<div class="OutDorPoiBoxoo"><div class="PoiIconoo"><img src="http://smartapp.alihive.com/static/src/images/images/ico_location%402x.png"></div><div class="OpBoxMesoo"><span class="PoiSearMesoo searchPOIMESo"></span><a class="mmoAoo"></a><div class="GeoHide"></div><div class="floorHide"></div><div class="mmciocj"></div></div></div>')
-                $('.LocalStorageBox').append(wwa);
-                $('.searchPOIMESo:last').html(poiInfo.name);
-                $('.mmoAoo:last').html(poiInfo.address);
-                $('.floorHide:last').html(poiInfo.parent);
-                $('.mmciocj:last').html(poiInfo.id);
-            })
-
-           /* $('.OutDorPoiBoxoo').bind('touchstart',function(){
-
-                var mmc= $(this).index();
-                $(this).addClass('active').siblings().removeClass('active');
-                var locationPoint=document.getElementsByClassName('searchPOIMESo');
-                console.log(mmc+'+'+locationPoint[mmc].innerHTML);
-                $("#" + elementId).val(locationPoint[mmc].innerHTML);
-                var locatHtml= locationPoint[mmc].innerHTML;
-                var parerntFLoor=document.getElementsByClassName('floorHide');
-                var poinID=document.getElementsByClassName('mmciocj');
-                var poinIDone=poinID[mmc].innerHTML;
-                var nowFloor=parerntFLoor[mmc].innerHTML;
-                console.log(poinIDone);
-
-                $('.LocalStorageBox').html('');
-
-                if(currentFloor === nowFloor){
-                    selectedLatlngoo = NGR.FeatureLayerUtils.getInnerPointByLayer(NGR.polygon(layers.area._featureLayers[poinIDone]._latlngs));
-                    console.log(selectedLatlng)
-
-                    (elementId === "OutDoorStartInput") ? (fromLatlngoo = selectedLatlngoo) : (toLatlng = selectedLatlngoo);
-                } else {
-                    datasource.requestPlanarGraph(nowFloor).then(function(layerInfo) {
-                        var tempFeatureLayers = NGR.featureLayer(layerInfo, {
-                            layerType: 'Area'
-                        });
-                        selectedLatlngoo = NGR.FeatureLayerUtils.getInnerPointByLayer(NGR.polygon(tempFeatureLayers._featureLayers[poinIDone]._latlngs));
-
-                        console.log(selectedLatlng);
-                        (elementId === "OutDoorStartInput") ? (fromLatlngoo = selectedLatlngoo) : (toLatlngoo = selectedLatlngoo);
-
-
-                    });
-                }
-                (elementId === "OutDoorStartInput") ? (fromFlooroo = nowFloor) : (toFlooroo = nowFloor);
-
-
-
-
-
-
-            })*/
-
-
-
-            /*$('#OutDoorLocaInput').bind('touchstart',function(){
-             var mmc= $(this).index()+7;
-
-             var locationPoint=document.getElementsByClassName('searchPOIMES');
-
-             var locatHtml= locationPoint[mmc].innerHTML;
-             console.log(locatHtml);
-             $('#OutDoorLocaInput').val(locatHtml);
-
-
-
-             })*/
-
-
-
-        });
-
-    };  var destMarker=null;
     var startMaker=null;
-   /* $("#OutDoorStartInput").bind("input", inputHandleroo);
-    $("#OutDoorLocaInput").bind("input", inputHandleroo);
-    $('.LocaIcoTwo').bind('touchstart',function(){
 
-
-
-
-
-        if (!$("#OutDoorStartInput").val() || $("#OutDoorStartInput").val() === "") {
-            alert("请输入起点");
-            return ;
-        }
-        if (!$("#OutDoorLocaInput").val() || $("#OutDoorLocaInput").val() === "") {
-            alert("请输入终点");
-            return ;
-        }
-        if (!(fromLatlngoo && fromFlooroo)) {
-            alert("未搜索到起点");
-        } else if (!(toLatlngoo && toFlooroo)) {
-            alert("未搜索到终点");
-        } else {
-            startMarker = NGR.marker(fromLatlngoo,{
-                icon: startIcon
-            });
-            destMarker = NGR.marker(toLatlngoo, {
-                icon: destIcon
-            });
-
-        }
-
-
-        if (control.getCurrentFloor() !== fromFlooroo){
-            control.fire('change',{
-                form:control.getCurrentFloor(),
-                to:fromFlooroo
-            })
-
-
-            /!* control.setCurrentFloor(locaFloor,loadPlanarGraph(fromFlooroo));*!/
-
-        } else {
-            if(CarMarker){
-                map.removeLayer(CarMarker);
-            }
-
-            startMarker.addTo(map);
-            destMarker.addTo(map);
-
-            /!*if (control.getCurrentFloor() === toFlooroo) {
-
-             destMarker.addTo(map);
-             }*!/
-
-
-            if (routinesLayer){
-                routinesLayer.clearLayers();
-            }
-            navi()
-
-
-
-
-
-        }
-        $('.FootBarOne').css({display:'block'})
-        $('.InputHeader').css({display:'block'})
-        $('#map').css({display:'block'})
-        $('#OutDoorMap').css({display:'block'});
-        $('.LocationPage').css({display:'none'});
-        $('.locatinPositon').css({display:'block'})
-
-
-    })*/
 
     var routinesLayer = null;
     var routines=null;
@@ -1114,32 +932,7 @@ $(function(){
 
 
 
-            /* if(control.getCurrentFloor == fromFlooroo){
 
-             if(!destMarker){
-             destMarker = NGR.marker(latTwo, {
-             icon: destIcon
-             });
-             destMarker.addTo(map);
-             }
-
-             }
-             if(control.getCurrentFloor == toFlooroo){
-             if(!startMaker){
-             startMarker = NGR.marker(latOne,{
-             icon: startIcon
-             });
-             startMarker.addTo(map);
-             }
-
-             }*/
-
-            /* if(control.getCurrentFloor()===fromFlooroo){
-             map.panTo(fromLatlngoo);
-             }
-             if(control.getCurrentFloor()===toFlooroo){
-             map.panTo(toLatlngoo);
-             }*/
 
 
         });
